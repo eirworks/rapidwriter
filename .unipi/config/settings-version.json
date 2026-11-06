@@ -1,0 +1,19 @@
+{
+  "migrated_version": "3.0.0",
+  "finalized": false,
+  "appliedAt": "2026-11-06T06:24:13.119Z",
+  "log": [
+    {
+      "action": "skipped:missing",
+      "from": "C:\\Users\\user\\Projects\\laravel\\rapidwriter\\.unipi\\config\\compactor.json"
+    },
+    {
+      "action": "skipped:missing",
+      "from": "C:\\Users\\user\\Projects\\laravel\\rapidwriter\\.unipi\\fusion-preset.json"
+    },
+    {
+      "action": "skipped:missing",
+      "from": "C:\\Users\\user\\Projects\\laravel\\rapidwriter\\.unipi\\config\\background-tasks.json"
+    }
+  ]
+}
