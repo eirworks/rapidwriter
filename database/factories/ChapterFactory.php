@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Data\ItemData;
 use App\Models\Chapter;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,6 +23,7 @@ class ChapterFactory extends Factory
             'story_id' => 1,
             'ordering' => 0,
             'compiled_content' => "",
+            'items' => [(new ItemData(fake()->sentence(), fake()->text()))->toArray()],
         ];
     }
 }

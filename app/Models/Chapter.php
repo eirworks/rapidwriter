@@ -15,7 +15,12 @@ class Chapter extends Model
         'slug',
         'ordering',
         'story_id',
-        'compiled_content'
+        'compiled_content',
+        'items',
+    ];
+
+    protected $casts = [
+        'items' => 'array',
     ];
 
     public function story()
@@ -23,8 +28,8 @@ class Chapter extends Model
         return $this->belongsTo(Story::class);
     }
 
-    public function items()
-    {
-        return $this->hasMany(ChapterItem::class);
-    }
+    // public function items()
+    // {
+    //     return $this->hasMany(ChapterItem::class);
+    // }
 }

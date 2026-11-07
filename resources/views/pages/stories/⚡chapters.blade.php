@@ -28,7 +28,7 @@ new class extends Component
     #[Computed]
     public function chapters()
     {
-        return $this->story->chapters()->latest('ordering')->orderBy('id', 'desc')->withCount('items')->paginate();
+        return $this->story->chapters()->latest('ordering')->orderBy('id', 'desc')->paginate();
     }
 
     public function saveChapter() {
@@ -68,11 +68,13 @@ new class extends Component
         <div class="flex flex-col gap-1">
             @foreach ($this->chapters() as $chapter)
             <div>
-                <div>{{ $chapter->title }}</div>
+                <div>
+                    <a href="{{ route('chapters.editor', [$story->id, $chapter->id]) }}" class="text-accent text-sm" wire:navigate>{{ $chapter->title }}</a>
+                </div>
                 <div class="flex gap-3 text-sm text-gray-500">
                     <div>[{{ $chapter->ordering ?? 0 }}]</div>
                     <div>{{ $chapter->words ?? 0 }} words</div>
-                    <div>{{ $chapter->items_count }} items</div>
+                    <div>{{ count($chapter->items) }} items</div>
                 </div>
             </div>
             @endforeach

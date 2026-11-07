@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('ordering');
             $table->string('title');
             $table->text('compiled_content');
+            $table->json('items');
             $table->timestamps();
         });
     }

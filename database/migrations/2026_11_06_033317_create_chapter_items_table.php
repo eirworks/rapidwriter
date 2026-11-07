@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('chapter_id')->index();
             $table->integer('ordering');
             $table->text('prompt');
-            $table->text('result');
+            $table->text('content');
             $table->timestamps();
         });
     }
