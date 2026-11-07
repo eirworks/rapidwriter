@@ -18,7 +18,10 @@ class ChapterFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => $this->faker->sentence(),
+            'story_id' => 1,
+            'ordering' => 0,
+            'compiled_content' => "",
         ];
     }
 }

@@ -32,7 +32,7 @@ new class extends Component
     #[Computed]
     public function stories()
     {
-        return Story::latest('updated_at')->paginate();
+        return Story::latest('updated_at')->withCount('chapters')->paginate();
     }
 
     public function createStory() {
@@ -101,12 +101,12 @@ new class extends Component
         <div class="my-3">
             <div class="flex gap-3 items-center">
                 <div class="font-bold">{{ $story->title }}</div>
-                <div class="text-gray-500 text-sm">{{ rand(3,15) }} chapters</div>
+                <div class="text-gray-500 text-sm">{{ $story->chapters_count }} chapters</div>
             </div>
             <div>{{ Str::limit($story->description, 100) }}</div>
             <div class="mt-3 flex gap-3">
                 <x-button class="btn btn-outline btn-secondary btn-sm" wire:click="editStory({{ $story->id }})" spinner="editStory">Edit</x-button>
-                <button class="btn btn-outline btn-accent btn-sm">Chapters</button>
+                <x-button :link="route('chapters', $story->id)" class="btn btn-outline btn-accent btn-sm">Chapters</x-button>
             </div>
         </div>
     @endforeach

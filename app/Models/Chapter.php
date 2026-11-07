@@ -10,6 +10,14 @@ class Chapter extends Model
     /** @use HasFactory<\Database\Factories\ChapterFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'title',
+        'slug',
+        'ordering',
+        'story_id',
+        'compiled_content'
+    ];
+
     public function story()
     {
         return $this->belongsTo(Story::class);

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('chapters', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('story_id')->index();
+            $table->integer('ordering');
             $table->string('title');
-            $table->string('slug');
             $table->text('compiled_content');
             $table->timestamps();
         });
