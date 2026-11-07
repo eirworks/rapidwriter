@@ -113,52 +113,64 @@ new class extends Component
         </x-form>
     </x-modal>
 
-    @if(!$preview)
-        @if ($this->items)
-            <div class="flex flex-col gap-3">
-                @foreach($this->items as $index => $item)
-                    <div class="rounded border border-gray-300 p-5 flex flex-col gap-3">
-                        <div class="flex gap-3 items-center">
-                            <div>#{{ $item->ordering }}</div>
-                            <div class="flex gap-3 items-center">
-                                @if($item->prompt)
-                                    <div class="font-mono">{{ $item->prompt }}</div>
-                                    <x-button class="btn-primary btn-xs">Generate</x-button>
-                                @else
-                                    <div class="font-mono text-gray-500">You haven't write the prompt</div>
-                                @endif
-                                <x-button class="btn-outline btn-secondary btn-xs" wire:click="editPrompt({{ $index }})" spinner="editPrompt">Edit Prompt</x-button>
-                            </div>
+    <div class="flex gap-3 my-3">
+        <div class="w-2/3">
+            @if(!$preview)
+                    @if ($this->items)
+                        <div class="flex flex-col gap-3">
+                            @foreach($this->items as $index => $item)
+                                <div class="rounded border border-gray-300 p-5 flex flex-col gap-3">
+                                    <div class="flex gap-3 items-center">
+                                        <div>#{{ $item->ordering }}</div>
+                                        <div class="flex gap-3 items-center">
+                                            @if($item->prompt)
+                                                <div class="font-mono">{{ $item->prompt }}</div>
+                                                <x-button class="btn-primary btn-xs">Generate</x-button>
+                                            @else
+                                                <div class="font-mono text-gray-500">You haven't write the prompt</div>
+                                            @endif
+                                            <x-button class="btn-outline btn-secondary btn-xs" wire:click="editPrompt({{ $index }})" spinner="editPrompt">Edit Prompt</x-button>
+                                        </div>
+                                    </div>
+                                    @if($item->content)
+                                        <div class="border-t border-t-gray-300 pt-3">{{ $item->content }}</div>
+                                        <div class="flex gap-3">
+                                            <x-button class="btn-outline btn-ghost btn-xs">Regenerate Result</x-button>
+                                            <x-button class="btn-outline btn-ghost btn-xs">Limited Regeneration Result</x-button>
+                                            <x-button class="btn-outline btn-ghost btn-xs">Clear</x-button>
+                                        </div>
+                                    @else
+                                    <div class="border-t border-t-gray-300 pt-3 text-gray-500 italic">There is no content yet</div>
+                                    @endif
+                                    <div class="flex gap-1">
+                                        <div class="flex-1 flex gap-1">
+                                            <x-button class="btn-outline btn-accent btn-xs" wire:click="editPrompt({{ $index }})" spinner="editPrompt">Edit Prompt</x-button>
+                                            @if($item->content)
+                                            <x-button class="btn-outline btn-accent btn-xs">Edit Result</x-button>
+                                            @endif
+                                            <x-button class="btn-soft btn-xs">Up</x-button>
+                                            <x-button class="btn-soft btn-xs">Down</x-button>
+                                        </div>
+                                        <x-button class="btn-outline btn-error btn-xs">Delete</x-button>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                        @if($item->content)
-                            <div class="border-t border-t-gray-300 pt-3">{{ $item->content }}</div>
-                            <div class="flex gap-3">
-                                <x-button class="btn-outline btn-ghost btn-xs">Regenerate Result</x-button>
-                                <x-button class="btn-outline btn-ghost btn-xs">Limited Regeneration Result</x-button>
-                                <x-button class="btn-outline btn-ghost btn-xs">Clear</x-button>
-                            </div>
-                        @else
-                        <div class="border-t border-t-gray-300 pt-3 text-gray-500 italic">There is no content yet</div>
-                        @endif
-                        <div class="flex gap-1">
-                            <div class="flex-1 flex gap-1">
-                                <x-button class="btn-outline btn-accent btn-xs" wire:click="editPrompt({{ $index }})" spinner="editPrompt">Edit Prompt</x-button>
-                                @if($item->content)
-                                <x-button class="btn-outline btn-accent btn-xs">Edit Result</x-button>
-                                @endif
-                                <x-button class="btn-soft btn-xs">Up</x-button>
-                                <x-button class="btn-soft btn-xs">Down</x-button>
-                            </div>
-                            <x-button class="btn-outline btn-error btn-xs">Delete</x-button>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div class="text-gray-500">There are no item yet.</div>
-        @endif
-    @else
-        <div class="text-gray-500 mb-3 italic">Preview mode</div>
-        <div class="">{{ $this->previewContent }}</div>
-    @endif
+                    @else
+                        <div class="text-gray-500">There are no item yet.</div>
+                    @endif
+                @else
+                    <div class="text-gray-500 mb-3 italic">Preview mode</div>
+                    <div class="">{{ $this->previewContent }}</div>
+                @endif
+        </div>
+
+        <div class="w-1/3 flex flex-col gap-3">
+            {{-- sidebar --}}
+            {{-- TODO presets --}}
+            {{-- TODO provider selection --}}
+            @livewire('providers-selection')
+        </div>
+    </div>
+
 </div>

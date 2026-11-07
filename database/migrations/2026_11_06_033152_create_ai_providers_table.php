@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('url');
             $table->string('model');
             $table->string('api_key');
+            $table->boolean('selected')->default(false);
             $table->timestamps();
         });
     }
