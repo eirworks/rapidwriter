@@ -18,7 +18,10 @@ class AiProviderFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->colorName(),
+            'url' => fake()->url(),
+            'model' => fake()->randomElement(['gpt-3.5-turbo', 'gpt-4']),
+            'api_key' => fake()->uuid(),
         ];
     }
 }

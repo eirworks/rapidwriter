@@ -81,7 +81,7 @@ new class extends Component
 <div>
     <nav class="mb-4">
         <x-button class="btn-primary" wire:click="createStory" spinner>New Story</x-button>
-        <button class="btn btn-accent btn-outline">Config</button>
+        <x-button class="btn btn-accent btn-outline" link="{{ route('providers') }}">Providers</x-button>
         <button class="btn btn-accent btn-outline">Presets</button>
     </nav>
     <x-modal wire:model="showForm" wire:submit="saveStory" :title="$isEdit ? 'Edit Story' : 'New Story'">
