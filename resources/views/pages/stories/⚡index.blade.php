@@ -83,6 +83,7 @@ new class extends Component
         <x-button class="btn-primary" wire:click="createStory" spinner>New Story</x-button>
         <x-button class="btn btn-accent btn-outline" link="{{ route('providers') }}">Providers</x-button>
         <button class="btn btn-accent btn-outline">Presets</button>
+        <button class="btn btn-accent btn-outline">Import</button>
     </nav>
     <x-modal wire:model="showForm" wire:submit="saveStory" :title="$isEdit ? 'Edit Story' : 'New Story'">
         <x-form>
@@ -104,9 +105,9 @@ new class extends Component
                 <div class="text-gray-500 text-sm">{{ $story->chapters_count }} chapters</div>
             </div>
             <div>{{ Str::limit($story->description, 100) }}</div>
-            <div class="mt-3 flex gap-3">
-                <x-button class="btn btn-outline btn-secondary btn-sm" wire:click="editStory({{ $story->id }})" spinner="editStory">Edit</x-button>
-                <x-button :link="route('chapters', $story->id)" class="btn btn-outline btn-accent btn-sm">Chapters</x-button>
+            <div class="mt-3 flex gap-1">
+                <x-button class="btn-soft btn-xs" wire:click="editStory({{ $story->id }})" spinner="editStory">Edit</x-button>
+                <x-button :link="route('chapters', $story->id)" class="btn-soft btn-xs">Chapters</x-button>
             </div>
         </div>
     @endforeach

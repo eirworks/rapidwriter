@@ -52,6 +52,7 @@ new class extends Component
     <div class="flex gap-3 items-center mb-3">
         <div class="font-bold">Chapters ({{ $this->chapters()->total() }})</div>
         <div class=""><x-button class="btn-primary btn-sm" spinner wire:click="showChapterForm = true">New Chapter</x-button></div>
+        <div class=""><x-button class="btn-secondary btn-outline btn-sm">Export Story</x-button></div>
     </div>
     <x-modal wire:model="showChapterForm" title="New Chapter">
         <x-form wire:submit="saveChapter">
@@ -72,7 +73,7 @@ new class extends Component
                     <a href="{{ route('chapters.editor', [$story->id, $chapter->id]) }}" class="text-accent text-sm" wire:navigate>{{ $chapter->title }}</a>
                 </div>
                 <div class="flex gap-3 text-sm text-gray-500">
-                    <div>[{{ $chapter->ordering ?? 0 }}]</div>
+                    <div>Chapter #{{ $chapter->ordering ?? 0 }}</div>
                     <div>{{ $chapter->words ?? 0 }} words</div>
                     <div>{{ count($chapter->items) }} items</div>
                 </div>
