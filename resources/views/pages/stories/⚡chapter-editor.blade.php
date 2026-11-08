@@ -77,12 +77,10 @@ new class extends Component
 ?>
 
 <div>
+    <div class="text-sm"><a href="{{ route('chapters', $story->id) }}" class="text-accent text-sm" wire:navigate>&larr; Back to story</a> | {{ $story->title }}</div>
     <div class="text-2xl mb-3">{{ $chapter->title }}</div>
     <div class="flex gap-3">
-        <div class="text-gray-500">#{{ $chapter->ordering }}</div>
-        <div class="">
-            Story: <a href="{{ route('chapters', $story->id) }}" class="text-accent text-sm" wire:navigate>{{ $story->title }}</a>
-        </div>
+        <div class="text-gray-500">Chapter #{{ $chapter->ordering }}</div>
         <div class="text-gray-500">{{ count($this->items) }} items</div>
         <div class="text-gray-500">{{ $this->words() }} words</div>
     </div>
