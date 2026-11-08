@@ -57,6 +57,8 @@ new class extends Component
 
     public function saveChapter() {
         // TODO save the chapter item changes
+        $this->chapter->items = collect($this->items)->map(function($item) { return $item->toArray(); })->toArray();
+        $this->chapter->save();
     }
 
     public function editPrompt($index)
@@ -92,7 +94,7 @@ new class extends Component
             @else
             <x-button class="btn-secondary btn-outline btn-sm" wire:click="togglePreview" spinner="togglePreview">Continue Edit</x-button>
             @endif
-            <x-button class="btn-primary btn-sm">Save Draft</x-button>
+            <x-button class="btn-primary btn-sm" wire:click="saveChapter" spinner="saveChapter">Save</x-button>
             <x-button class="btn-soft btn-outline btn-sm">Select Preset</x-button>
         </div>
         <div class="flex gap-3 items-center">
@@ -120,9 +122,9 @@ new class extends Component
                         <div class="flex flex-col gap-3">
                             @foreach($this->items as $index => $item)
                                 <div class="rounded border border-gray-300 p-5 flex flex-col gap-3">
-                                    <div class="flex gap-3 items-center">
+                                    <div class="flex gap-3 items-start">
                                         <div>#{{ $item->ordering }}</div>
-                                        <div class="flex gap-3 items-center">
+                                        <div class="flex gap-3 items-start">
                                             @if($item->prompt)
                                                 <div class="font-mono">{{ $item->prompt }}</div>
                                                 <x-button class="btn-primary btn-xs">Generate</x-button>
