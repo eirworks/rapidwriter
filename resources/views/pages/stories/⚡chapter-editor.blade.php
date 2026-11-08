@@ -73,6 +73,10 @@ new class extends Component
         $this->items[$this->promptEditIndex]->prompt = $this->promptEditInput;
         $this->showEditPrompt = false;
     }
+
+    public function deleteItem($index) {
+        unset($this->items[$index]);
+    }
 };
 ?>
 
@@ -151,7 +155,7 @@ new class extends Component
                                             <x-button class="btn-soft btn-xs">Up</x-button>
                                             <x-button class="btn-soft btn-xs">Down</x-button>
                                         </div>
-                                        <x-button class="btn-outline btn-error btn-xs">Delete</x-button>
+                                        <x-button class="btn-outline btn-error btn-xs" wire:confirm="Are you sure?" wire:click="deleteItem({{ $index }})">Delete</x-button>
                                     </div>
                                 </div>
                             @endforeach
