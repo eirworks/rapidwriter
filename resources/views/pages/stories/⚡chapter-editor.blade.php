@@ -123,7 +123,11 @@ new class extends Component
                     @if ($this->items)
                         <div class="flex flex-col gap-3">
                             @foreach($this->items as $index => $item)
-                                <div class="rounded border border-gray-300 p-5 flex flex-col gap-3">
+                                <div
+                                class="rounded border border-gray-300 p-5 flex flex-col gap-3"
+                                x-data="{ showPromptEditor: false}"
+                                x-key="item-{{ $index }}"
+                                >
                                     <div class="flex gap-3 items-start">
                                         <div>#{{ $item->ordering }}</div>
                                         <div class="flex gap-3 items-start">
@@ -133,16 +137,12 @@ new class extends Component
                                             @else
                                                 <div class="font-mono text-gray-500">You haven't write the prompt</div>
                                             @endif
-                                            <x-button class="btn-outline btn-secondary btn-xs" wire:click="editPrompt({{ $index }})" spinner="editPrompt">Edit Prompt</x-button>
+                                            <x-textarea x-show="showPromptEditor" wire:model="items.{{ $index }}.prompt" rows="10" class="textarea-ghost focus:outline-none focus:bg-base-200" />
+                                            <x-button class="btn-outline btn-secondary btn-xs" x-on:click="showPromptEditor = !showPromptEditor" spinner="editPrompt">Edit Prompt</x-button>
                                         </div>
                                     </div>
                                     @if($item->content)
                                         <div class="border-t border-t-gray-300 pt-3">{{ $item->content }}</div>
-                                        <div class="flex gap-3">
-                                            <x-button class="btn-outline btn-ghost btn-xs">Regenerate Result</x-button>
-                                            <x-button class="btn-outline btn-ghost btn-xs">Limited Regeneration Result</x-button>
-                                            <x-button class="btn-outline btn-ghost btn-xs">Clear</x-button>
-                                        </div>
                                     @else
                                     <div class="border-t border-t-gray-300 pt-3 text-gray-500 italic">There is no content yet</div>
                                     @endif

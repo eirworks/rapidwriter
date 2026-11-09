@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(AiProviderSeeder::class);
+        $this->call(AiPresetSeeder::class);
         $this->call(StorySeeder::class);
         $this->call(ChapterSeeder::class);
     }

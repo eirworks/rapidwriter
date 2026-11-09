@@ -6,3 +6,4 @@ Route::livewire('/', 'pages::stories.index')->name('home');
 Route::livewire('/providers', 'pages::providers')->name('providers');
 Route::livewire('/stories/{story}/chapters', 'pages::stories.chapters')->name('chapters');
 Route::livewire('/stories/{story}/chapters/{chapter}/editor', 'pages::stories.chapter-editor')->name('chapters.editor');
+Route::livewire('/presets', 'pages::presets')->name('presets');

@@ -9,4 +9,8 @@ class AiPreset extends Model
 {
     /** @use HasFactory<\Database\Factories\AiPresetFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'name', 'prompt'
+    ];
 }

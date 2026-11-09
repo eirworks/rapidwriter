@@ -18,7 +18,8 @@ class AiPresetFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => "Preset ".fake()->colorName(),
+            'prompt' => fake()->text(),
         ];
     }
 }

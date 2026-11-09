@@ -79,10 +79,11 @@ new class extends Component
 ?>
 
 <div>
-    <nav class="mb-4">
+    <nav class="mb-4 flex gap-1">
         <x-button class="btn-primary" wire:click="createStory" spinner>New Story</x-button>
         <x-button class="btn btn-accent btn-outline" link="{{ route('providers') }}">Providers</x-button>
-        <button class="btn btn-accent btn-outline">Presets</button>
+        <x-button class="btn btn-accent btn-outline" link="{{ route('presets') }}">Presets</x-button>
+        <div class="md:w-3"></div>
         <button class="btn btn-accent btn-outline">Import</button>
     </nav>
     <x-modal wire:model="showForm" wire:submit="saveStory" :title="$isEdit ? 'Edit Story' : 'New Story'">
