@@ -170,10 +170,8 @@ new class extends Component
         </div>
 
         <div class="w-1/3 flex flex-col gap-3">
-            {{-- sidebar --}}
-            {{-- TODO presets --}}
-            {{-- TODO provider selection --}}
             @livewire('providers-selection')
+            @livewire('preset-selection')
         </div>
     </div>
 

@@ -11,6 +11,6 @@ class AiPreset extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'prompt'
+        'name', 'prompt', 'selected'
     ];
 }

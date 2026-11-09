@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('prompt');
+            $table->boolean('selected')->default(false);
             $table->timestamps();
         });
     }
