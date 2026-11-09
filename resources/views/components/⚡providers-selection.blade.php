@@ -10,7 +10,7 @@ new class extends Component
 
     public function mount()
     {
-        $this->selectedProvider = AiProvider::where('selected', true)->first()->id;
+        $this->selectedProvider = AiProvider::where('selected', true)->first()->id ?? 0;
         $this->providers = AiProvider::get()->map(function($p) { return ['name' => $p->name, 'hint' => $p->model, 'id' => $p->id]; })->toArray();
     }
 
@@ -28,6 +28,9 @@ new class extends Component
 
 <div>
     <x-card class="bg-base-200">
+        @if($selectedProvider == 0)
+            <x-alert class="alert-warning">Please select a provider!</x-alert>
+        @endif
         <div class="text-xs text-orange-500 my-3 float-end" wire:loading>Please wait...</div>
         <x-radio wire:live label="Select Provider" wire:model.live="selectedProvider" :options="$providers" wire:loading.attr="disabled" />
     </x-card>
