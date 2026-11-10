@@ -37,7 +37,7 @@ new class extends Component {
         <div class="text-orange-500 text-sm float-right" wire:loading>Please wait</div>
         <x-select :options="$presets" wire:model.live="selectedPresetId" label="Select Preset"/>
         <div class="mt-3">
-            <x-textarea readonly rows="10" label="System Prompt">
+            <x-textarea readonly rows="10" label="System Prompt" placeholder="No system prompt">
                 {{ $selectedPreset->prompt ?? "" }}
             </x-textarea>
         </div>

@@ -6,6 +6,9 @@ use App\Models\Story;
 use Livewire\Computed;
 use App\Models\ChapterItem;
 use App\Data\ItemData;
+use App\Models\AiPreset;
+use App\Models\AiProvider;
+use Prism\Prism;
 
 new class extends Component
 {
@@ -16,6 +19,9 @@ new class extends Component
     public string $previewContent = "";
 
     public array $items = [];
+
+    /** @var array<int, bool> per-item generation state */
+    public array $generating = [];
 
     public bool $showEditPrompt = false;
     public string $promptEditInput = "";
@@ -38,7 +44,7 @@ new class extends Component
     }
 
     public function addItem() {
-        $this->items[] = new ItemData("", "", count($this->items)+1-1);
+        $this->items[] = new ItemData("", "", count($this->items));
     }
 
     public function togglePreview()
@@ -46,9 +52,10 @@ new class extends Component
         if (!$this->preview) {
             $this->preview = true;
 
-            foreach($this->items as $index => $item) {
-                $this->previewContent .= $item->content;
-            }
+            $this->previewContent = collect($this->items)
+                ->pluck('content')
+                ->filter(fn ($content) => trim((string) $content) !== '')
+                ->join("\n\n");
         } else {
             $this->preview = false;
             $this->previewContent = "";
@@ -56,9 +63,67 @@ new class extends Component
     }
 
     public function saveChapter() {
-        // TODO save the chapter item changes
-        $this->chapter->items = collect($this->items)->map(function($item) { return $item->toArray(); })->toArray();
+        $this->persist();
+    }
+
+    protected function persist(): void
+    {
+        $this->chapter->items = collect($this->items)
+            ->values()
+            ->map(fn ($item) => $item->toArray())
+            ->all();
+
         $this->chapter->save();
+    }
+
+    public function generate(int $index)
+    {
+        $this->resetErrorBag("item{$index}Prompt");
+        $this->resetErrorBag("item{$index}Content");
+
+        $item = $this->items[$index];
+
+        if (trim($item->prompt) === '') {
+            $this->addError("item{$index}Prompt", 'Write a prompt first.');
+            return;
+        }
+
+        $provider = AiProvider::where('selected', true)->first();
+        $preset = AiPreset::where('selected', true)->first();
+
+        if (! $provider) {
+            $this->addError("item{$index}Content", 'Please select a provider first.');
+            return;
+        }
+
+        // TODO: remove this dump once generation is enabled.
+        dd([
+            'index' => $index,
+            'provider' => $provider->only(['id', 'name', 'url', 'model']),
+            'systemPrompt' => $preset?->prompt ?? '',
+            'prompt' => $item->prompt,
+        ]);
+
+        $this->generating[$index] = true;
+
+        try {
+            $this->items[$index]->content = Prism::text()
+                ->using($provider->name, $provider->model, [
+                    'api_key' => $provider->api_key,
+                    'url' => $provider->url,
+                ])
+                ->withSystemPrompt($preset?->prompt ?? '')
+                ->withPrompt($item->prompt)
+                ->asText()
+                ->text;
+        } catch (\Throwable $e) {
+            report($e);
+            $this->addError("item{$index}Content", $e->getMessage());
+        } finally {
+            $this->generating[$index] = false;
+        }
+
+        $this->persist();
     }
 
     public function editPrompt($index)
@@ -75,7 +140,30 @@ new class extends Component
     }
 
     public function deleteItem($index) {
-        unset($this->items[$index]);
+        array_splice($this->items, $index, 1);
+        $this->reindex();
+    }
+
+    public function moveItem(int $index, int $direction): void
+    {
+        $target = $index + $direction;
+
+        if (! isset($this->items[$target])) {
+            return;
+        }
+
+        [$this->items[$index], $this->items[$target]] = [$this->items[$target], $this->items[$index]];
+
+        $this->reindex();
+    }
+
+    protected function reindex(): void
+    {
+        $this->items = array_values($this->items);
+
+        foreach ($this->items as $position => $item) {
+            $item->ordering = $position;
+        }
     }
 };
 ?>
@@ -97,7 +185,6 @@ new class extends Component
             <x-button class="btn-secondary btn-outline btn-sm" wire:click="togglePreview" spinner="togglePreview">Continue Edit</x-button>
             @endif
             <x-button class="btn-primary btn-sm" wire:click="saveChapter" spinner="saveChapter">Save</x-button>
-            <x-button class="btn-soft btn-outline btn-sm">Select Preset</x-button>
         </div>
         <div class="flex gap-3 items-center">
             <div class="">Export as:</div>
@@ -123,41 +210,60 @@ new class extends Component
                     @if ($this->items)
                         <div class="flex flex-col gap-3">
                             @foreach($this->items as $index => $item)
-                                <div
-                                class="rounded border border-gray-300 p-5 flex flex-col gap-3"
+                                <x-card
+                                    wire:key="editor-{{ $item->key }}"
+                                class="bg-base-200"
                                 x-data="{ showPromptEditor: false}"
-                                x-key="item-{{ $index }}"
+                                x-key="item-{{ $item->key }}"
                                 >
                                     <div class="flex gap-3 items-start">
-                                        <div>#{{ $item->ordering }}</div>
-                                        <div class="flex gap-3 items-start">
-                                            @if($item->prompt)
-                                                <div class="font-mono">{{ $item->prompt }}</div>
-                                                <x-button class="btn-primary btn-xs">Generate</x-button>
-                                            @else
-                                                <div class="font-mono text-gray-500">You haven't write the prompt</div>
-                                            @endif
-                                            <x-textarea x-show="showPromptEditor" wire:model="items.{{ $index }}.prompt" rows="10" class="textarea-ghost focus:outline-none focus:bg-base-200" />
-                                            <x-button class="btn-outline btn-secondary btn-xs" x-on:click="showPromptEditor = !showPromptEditor" spinner="editPrompt">Edit Prompt</x-button>
-                                        </div>
-                                    </div>
-                                    @if($item->content)
-                                        <div class="border-t border-t-gray-300 pt-3">{{ $item->content }}</div>
-                                    @else
-                                    <div class="border-t border-t-gray-300 pt-3 text-gray-500 italic">There is no content yet</div>
-                                    @endif
-                                    <div class="flex gap-1">
-                                        <div class="flex-1 flex gap-1">
-                                            <x-button class="btn-outline btn-accent btn-xs" wire:click="editPrompt({{ $index }})" spinner="editPrompt">Edit Prompt</x-button>
+                                        <div class="text-lg font-bold">#{{ str_pad($item->ordering, 2, "0", STR_PAD_LEFT) }}</div>
+                                        <div class="flex-1 flex flex-col gap-3">
+                                            <div x-show="showPromptEditor" style="display: none" class="flex flex-col gap-2">
+                                                <x-textarea
+                                                    class="textarea-ghost focus:outline-none bg-base-300"
+                                                    placeholder="Your prompt here"
+                                                    rows="4"
+                                                    wire:model.blur="items.{{ $index }}.prompt"
+                                                />
+                                                @error("item{$index}Prompt")
+                                                    <div class="text-error text-xs">{{ $message }}</div>
+                                                @enderror
+                                                <div class="flex items-center justify-end gap-2">
+                                                    <div wire:loading wire:target="generate({{ $index }})" class="text-xs text-orange-500">Generating...</div>
+                                                    <x-button
+                                                        class="btn-primary btn-xs"
+                                                        wire:click="generate({{ $index }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="generate({{ $index }})"
+                                                    >Generate</x-button>
+                                                </div>
+                                            </div>
                                             @if($item->content)
-                                            <x-button class="btn-outline btn-accent btn-xs">Edit Result</x-button>
+                                                <div class="whitespace-pre-wrap">{{ $item->content }}</div>
+                                            @else
+                                                <div class="text-gray-500 italic">There is no content yet</div>
                                             @endif
-                                            <x-button class="btn-soft btn-xs">Up</x-button>
-                                            <x-button class="btn-soft btn-xs">Down</x-button>
+                                            @error("item{$index}Content")
+                                                <div class="text-error text-xs">{{ $message }}</div>
+                                            @enderror
+                                            <div class="flex gap-1">
+                                                <div class="flex-1 flex gap-1 items-center">
+                                                    <x-button class="btn-soft btn-xs" x-on:click="showPromptEditor = !showPromptEditor">
+                                                        <span x-show="!showPromptEditor">Prompt</span>
+                                                        <span x-show="showPromptEditor" style="display: none">Hide Prompt</span>
+                                                    </x-button>
+                                                    @if($item->content)
+                                                        <x-button class="btn-outline btn-accent btn-xs">Edit Result</x-button>
+                                                    @endif
+                                                    <x-button class="btn-soft btn-xs" wire:click="moveItem({{ $index }}, -1)" :disabled="$loop->first">Up</x-button>
+                                                    <x-button class="btn-soft btn-xs" wire:click="moveItem({{ $index }}, 1)" :disabled="$loop->last">Down</x-button>
+                                                </div>
+                                                <x-button class="btn-outline btn-error btn-xs" wire:confirm="Are you sure?" wire:click="deleteItem({{ $index }})">Delete</x-button>
+                                            </div>
                                         </div>
-                                        <x-button class="btn-outline btn-error btn-xs" wire:confirm="Are you sure?" wire:click="deleteItem({{ $index }})">Delete</x-button>
                                     </div>
-                                </div>
+                                </x-card>
                             @endforeach
                         </div>
                     @else
@@ -165,7 +271,7 @@ new class extends Component
                     @endif
                 @else
                     <div class="text-gray-500 mb-3 italic">Preview mode</div>
-                    <div class="">{{ $this->previewContent }}</div>
+                    <div class="whitespace-pre-wrap">{!! nl2br(e($this->previewContent)) !!}</div>
                 @endif
         </div>
 
