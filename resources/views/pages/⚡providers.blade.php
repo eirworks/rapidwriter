@@ -96,9 +96,9 @@ new class extends Component
         </x-form>
     </x-modal>
 
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-3 md:w-1/2">
         @foreach ($this->providers as $provider)
-            <div class="rounded p-3 bg-base-200 flex gap-2 flex-col">
+            <x-card class="bg-base-200 flex gap-2 flex-col">
                 <div class="font-bold">{{ $provider->name }}</div>
                 <div class="text-sm text-gray-500">{{ $provider->url }}</div>
                 <div class="text-sm text-gray-500">{{ $provider->model }}</div>
@@ -108,7 +108,7 @@ new class extends Component
                     </div>
                     <x-button class="btn-outline btn-error btn-xs" wire:click="deleteProvider({{ $provider->id }})" spinner="deleteProvider" wire:confirm="Are you sure?">Delete</x-button>
                 </div>
-            </div>
+            </x-card>
         @endforeach
     </div>
 </div>

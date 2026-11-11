@@ -99,20 +99,22 @@ new class extends Component
         </x-form>
     </x-modal>
     @if($this->stories())
-    @foreach($this->stories() as $story)
-        <div class="my-3">
-            <div class="flex gap-3 items-center">
-                <div class="font-bold">{{ $story->title }}</div>
-                <div class="text-gray-500 text-sm">{{ $story->chapters_count }} chapters</div>
-            </div>
-            <div>{{ Str::limit($story->description, 100) }}</div>
-            <div class="mt-3 flex gap-1">
-                <x-button class="btn-soft btn-xs" wire:click="editStory({{ $story->id }})" spinner="editStory">Edit</x-button>
-                <x-button :link="route('chapters', $story->id)" class="btn-soft btn-xs">Chapters</x-button>
-            </div>
+        <div class="md:w-1/2">
+            @foreach($this->stories() as $story)
+                <x-card class="my-3 bg-base-200">
+                    <div class="flex gap-3 items-center">
+                        <div class="font-bold">{{ $story->title }}</div>
+                        <div class="text-gray-500 text-sm">{{ $story->chapters_count }} chapters</div>
+                    </div>
+                    <div>{{ Str::limit($story->description, 100) }}</div>
+                    <div class="mt-3 flex gap-1">
+                        <x-button class="btn-soft btn-xs" wire:click="editStory({{ $story->id }})" spinner="editStory">Edit</x-button>
+                        <x-button :link="route('chapters', $story->id)" class="btn-soft btn-xs">Chapters</x-button>
+                    </div>
+                </x-card>
+            @endforeach
+            {!! $this->stories()->links() !!}
         </div>
-    @endforeach
-    {!! $this->stories()->links() !!}
     @else
     <div class="text-gray-500">No stories yet</div>
     @endif
